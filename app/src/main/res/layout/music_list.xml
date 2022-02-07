@@ -1,0 +1,27 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+	android:gravity="top|center"
+    android:orientation="vertical">
+	<LinearLayout
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:gravity="center"
+		android:orientation="horizontal">
+
+		<ImageView
+			android:layout_width="35dp"
+			android:layout_height="47dp"
+			android:layout_marginLeft="5dp"
+			android:src="@drawable/music_cover" />
+		<TextView
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:text="Music name.mp3"
+			android:padding="10dp"
+			android:textSize="20sp"
+			android:id="@+id/music_textView"
+		/>
+	</LinearLayout>
+
+</LinearLayout>
