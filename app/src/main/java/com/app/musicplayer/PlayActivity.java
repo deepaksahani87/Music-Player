@@ -63,19 +63,23 @@ public class PlayActivity extends AppCompatActivity{
             @Override
             public void onClick(View v) {
                 //Toast.makeText(getApplicationContext(),"play btn",Toast.LENGTH_SHORT).show();
-                if(isMediaPlaying) {
-                    mediaplayer.pause();
-                    play_btn.setImageResource(R.drawable.play);
-                    isMediaPlaying = false;
-                    handler.removeCallbacks(runnable);
-                }
-                else{
-                    mediaplayer.play();
-                    play_btn.setImageResource(R.drawable.pause);
-                    isMediaPlaying = true;
-                    handler.postDelayed(runnable,0);
+             //   if(mediaplayer!=null) {
+                    if (isMediaPlaying) {
+                        mediaplayer.pause();
+                        play_btn.setImageResource(R.drawable.play);
+                        isMediaPlaying = false;
+                        handler.removeCallbacks(runnable);
+                    } else {
+                        mediaplayer.play();
+                        play_btn.setImageResource(R.drawable.pause);
+                        isMediaPlaying = true;
+                        handler.postDelayed(runnable, 0);
 
-                }
+                    }
+//                }
+//                else {
+//                    Toast.makeText(getApplicationContext(),"Media cannot be played!",Toast.LENGTH_SHORT).show();
+//                }
             }
         });
 
@@ -259,7 +263,13 @@ public class PlayActivity extends AppCompatActivity{
     public void setCoverImage(String url)
     {
         android.media.MediaMetadataRetriever mmr = new MediaMetadataRetriever();
-        mmr.setDataSource(url);
+        try {
+            mmr.setDataSource(url);
+        }
+        catch (Exception e){
+            e.printStackTrace();
+        }
+
 
         byte [] data = mmr.getEmbeddedPicture();
 
@@ -308,7 +318,4 @@ public class PlayActivity extends AppCompatActivity{
 
     }
 
-    void startForegroundService(){
-        Notification notification = new Notification();
-    }
 }

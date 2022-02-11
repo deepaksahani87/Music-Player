@@ -2,41 +2,54 @@ package com.app.musicplayer;
 
 import android.content.Context;
 import android.media.MediaPlayer;
-import android.net.Uri;
+import android.widget.Toast;
+
+import java.io.IOException;
 
 public class mPlayer {
-    private Uri path;
+
     private Context context;
-    private MediaPlayer mediaPlayer ;
-    public mPlayer(Context c,String filepath){
-        path = Uri.parse(filepath);
+    private MediaPlayer mediaPlayer;
+
+    public mPlayer(Context c, String filepath) {
         context = c;
-        mediaPlayer = MediaPlayer.create(context,path);
+        mediaPlayer = new MediaPlayer();
+        try {
+            mediaPlayer.setDataSource(filepath);
+            mediaPlayer.prepare();
+        } catch (IOException e) {
+            Toast.makeText(context, "Error Occurred While Playing", Toast.LENGTH_SHORT).show();
+            e.printStackTrace();
+        }
     }
 
-    void play(){
+    void play() {
         mediaPlayer.start();
     }
-    void pause(){
+
+    void pause() {
         mediaPlayer.pause();
     }
 
-    void stop(){
+    void stop() {
         mediaPlayer.stop();
         mediaPlayer.release();
 
     }
 
-    boolean isPlaying(){
+    boolean isPlaying() {
         return mediaPlayer.isPlaying();
     }
-    int getDuration(){
-        return  mediaPlayer.getDuration();
+
+    int getDuration() {
+        return mediaPlayer.getDuration();
     }
-    int getCurrentPosition(){
-        return  mediaPlayer.getCurrentPosition();
+
+    int getCurrentPosition() {
+        return mediaPlayer.getCurrentPosition();
     }
-    void seekTo(int mili){
+
+    void seekTo(int mili) {
         mediaPlayer.seekTo(mili);
     }
 

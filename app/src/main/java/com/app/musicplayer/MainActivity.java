@@ -7,7 +7,6 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
-import android.os.Parcelable;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -20,13 +19,14 @@ import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity {
 
+    final String[] permissions = {Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE};
+    final int PERMISSION_CODE = 100;
     RecyclerView recyclerView;
     FileHandler fileHandler;
     RecyclerViewAdapter ad;
-    final String[] permissions = {Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE};
-    final int PERMISSION_CODE = 100;
     ArrayList<File> musicFiles = new ArrayList<>();
-    ArrayList<String> musicFilesName= new ArrayList<>();
+    Handler handler = new Handler();
+    Runnable runnable;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,15 +35,17 @@ public class MainActivity extends AppCompatActivity {
         recyclerView = findViewById(R.id.recyclerView);
         initRecyclerView();
         fileHandler = FileHandler.getInstance();
-        ad = new RecyclerViewAdapter(musicFilesName);
+        musicFiles = fileHandler.getFileArrayList();
+        System.out.println("this should print first");
+        ad = new RecyclerViewAdapter(musicFiles);
         recyclerView.setAdapter(ad);
         ad.setOnItemClickListener(new RecyclerViewAdapter.OnItemClickListener() {
             @Override
             public void OnItemClick(int position) {
                 //Toast.makeText(getApplicationContext(), position + "", Toast.LENGTH_SHORT).show();
-                Intent playactivityIntent = new Intent(getApplicationContext(),PlayActivity.class);
-                playactivityIntent.putExtra("musicFiles",musicFiles);
-                playactivityIntent.putExtra("index",position);
+                Intent playactivityIntent = new Intent(getApplicationContext(), PlayActivity.class);
+                playactivityIntent.putExtra("musicFiles", musicFiles);
+                playactivityIntent.putExtra("index", position);
                 startActivity(playactivityIntent);
             }
         });
@@ -61,13 +63,21 @@ public class MainActivity extends AppCompatActivity {
             if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 // Permission is granted. Continue the action or workflow in your app.
                 // Toast.makeText(getApplicationContext(), "permission granted", Toast.LENGTH_SHORT).show();
-                musicFiles = fileHandler.getMusicFiles(Environment.getExternalStorageDirectory());
-                for (int i = 0; i < musicFiles.size(); i++) {
-                    musicFilesName.add(fileHandler.getFileName(musicFiles.get(i)));
-                    ad.notifyDataSetChanged();
-                }
+                fileHandler.prepareMusicFiles(Environment.getExternalStorageDirectory());
+                runnable = new Runnable() {
+                    @Override
+                    public void run() {
+                        ad.notifyDataSetChanged();
+                        if (fileHandler.isFilePreparetionDone) {
+                            handler.removeCallbacks(runnable);
+                        } else {
+                            handler.postDelayed(runnable, 600);
 
+                        }
 
+                    }
+                };
+                handler.postDelayed(runnable, 100);
 
             } else {
                 //Permission denied
